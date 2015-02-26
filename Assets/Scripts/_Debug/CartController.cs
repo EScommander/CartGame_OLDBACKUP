@@ -19,6 +19,11 @@ public class CartController : MonoBehaviour
 	private bool hasTraction = true;
 	private float forwardAcceleration = 30.0f;
 
+	//Jer//
+	public GameObject[] turnableWheels;
+	private float maxTurnDeg = 75;
+	//Jer//
+
 	// Update is called once per frame
 	void Update () 
 	{
@@ -42,24 +47,46 @@ public class CartController : MonoBehaviour
 
 		if (hasTraction) 
 		{
+			//JER//
+			float steeringInput = Input.GetAxis ("JoyX0");
+			float accelInput = Input.GetAxis("R_Trigger");
+			//JER//
+
 			if (Input.GetKey (KeyCode.W)) 
 			{
+				accelInput = 1;
 				this.rigidbody.AddForce (transform.forward * forwardAcceleration);
 			}
 			if (Input.GetKey (KeyCode.S)) 
 			{
-				this.rigidbody.AddForce (-transform.forward * forwardAcceleration);
+				accelInput = -1;
+				//this.rigidbody.AddForce (-transform.forward * forwardAcceleration);
 			}
 
 			if (Input.GetKey (KeyCode.A)) 
 			{
-				this.rigidbody.AddTorque(-transform.up * handling);
+				steeringInput = -1;
+				//this.rigidbody.AddTorque(-transform.up * handling);
 			}
 
 			if (Input.GetKey (KeyCode.D)) 
 			{
-				this.rigidbody.AddTorque(transform.up * handling);
+				steeringInput = 1;
+				//this.rigidbody.AddTorque(transform.up * handling);
 			}
+
+			//****Jer's Code**//
+			this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
+			this.rigidbody.AddTorque(transform.up * steeringInput * handling);
+
+			if(turnableWheels.Length > 0)
+			{
+				for(int i = 0; i < turnableWheels.Length; i++)
+				{
+					turnableWheels[i].transform.eulerAngles = new Vector3(0, steeringInput * maxTurnDeg, 0);
+				}
+			}
+			//****Jer's Code END**//
 		}
 
 		RaycastHit hit;
