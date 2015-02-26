@@ -27,88 +27,91 @@ public class CartController : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		Debug.DrawRay (transform.position, transform.forward * 10.0f);
-
-		if (this.rigidbody == null)
-			return;
-
-		if (Input.GetKey(KeyCode.Space)) 
+		if(networkView.isMine || NetworkManager.GetInstance().isOnline == false)
 		{
-			this.rigidbody.drag = this.traction / 2.0f;
-			this.forwardAcceleration = acceleration / 2.0f;
-		}
-		else
-		{
-			this.rigidbody.drag = this.traction;
-			this.forwardAcceleration = acceleration;
-		}
+			Debug.DrawRay (transform.position, transform.forward * 10.0f);
 
-		this.rigidbody.angularDrag = this.rotationalTraction;
+			if (this.rigidbody == null)
+				return;
 
-		if (hasTraction) 
-		{
-			//JER//
-			float steeringInput = Input.GetAxis ("JoyX0");
-			float accelInput = Input.GetAxis("R_Trigger");
-			//JER//
-
-			if (Input.GetKey (KeyCode.W)) 
+			if (Input.GetKey(KeyCode.Space)) 
 			{
-				accelInput = 1;
-				this.rigidbody.AddForce (transform.forward * forwardAcceleration);
+				this.rigidbody.drag = this.traction / 2.0f;
+				this.forwardAcceleration = acceleration / 2.0f;
 			}
-			if (Input.GetKey (KeyCode.S)) 
+			else
 			{
-				accelInput = -1;
-				//this.rigidbody.AddForce (-transform.forward * forwardAcceleration);
+				this.rigidbody.drag = this.traction;
+				this.forwardAcceleration = acceleration;
 			}
 
-			if (Input.GetKey (KeyCode.A)) 
-			{
-				steeringInput = -1;
-				//this.rigidbody.AddTorque(-transform.up * handling);
-			}
+			this.rigidbody.angularDrag = this.rotationalTraction;
 
-			if (Input.GetKey (KeyCode.D)) 
+			if (hasTraction) 
 			{
-				steeringInput = 1;
-				//this.rigidbody.AddTorque(transform.up * handling);
-			}
+				//JER//
+				float steeringInput = Input.GetAxis ("JoyX0");
+				float accelInput = Input.GetAxis("R_Trigger");
+				//JER//
 
-			//****Jer's Code**//
-			this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
-			this.rigidbody.AddTorque(transform.up * steeringInput * handling);
-
-			if(turnableWheels.Length > 0)
-			{
-				for(int i = 0; i < turnableWheels.Length; i++)
+				if (Input.GetKey (KeyCode.W)) 
 				{
-					turnableWheels[i].transform.eulerAngles = new Vector3(0, steeringInput * maxTurnDeg, 0);
+					accelInput = 1;
+					this.rigidbody.AddForce (transform.forward * forwardAcceleration);
+				}
+				if (Input.GetKey (KeyCode.S)) 
+				{
+					accelInput = -1;
+					//this.rigidbody.AddForce (-transform.forward * forwardAcceleration);
+				}
+
+				if (Input.GetKey (KeyCode.A)) 
+				{
+					steeringInput = -1;
+					//this.rigidbody.AddTorque(-transform.up * handling);
+				}
+
+				if (Input.GetKey (KeyCode.D)) 
+				{
+					steeringInput = 1;
+					//this.rigidbody.AddTorque(transform.up * handling);
+				}
+
+				//****Jer's Code**//
+				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
+				this.rigidbody.AddTorque(transform.up * steeringInput * handling);
+
+				if(turnableWheels.Length > 0)
+				{
+					for(int i = 0; i < turnableWheels.Length; i++)
+					{
+						turnableWheels[i].transform.eulerAngles = new Vector3(0, steeringInput * maxTurnDeg, 0);
+					}
+				}
+				//****Jer's Code END**//
+			}
+
+			RaycastHit hit;
+
+			if(Physics.Raycast(new Ray(transform.position, Vector3.down), out hit))
+			{
+				if(hit.distance > suspension)
+				{
+					this.rigidbody.AddForce(Vector3.down * cartGravity);
+				}
+				else if(hit.distance < suspension)
+				{
+					this.rigidbody.AddForce(Vector3.up * cartGravity);
 				}
 			}
-			//****Jer's Code END**//
-		}
 
-		RaycastHit hit;
-
-		if(Physics.Raycast(new Ray(transform.position, Vector3.down), out hit))
-		{
-			if(hit.distance > suspension)
+			if(rigidbody.velocity.x >= this.topSpeed)
 			{
-				this.rigidbody.AddForce(Vector3.down * cartGravity);
+				rigidbody.velocity = new Vector3(this.topSpeed, rigidbody.velocity.y, rigidbody.velocity.z);
 			}
-			else if(hit.distance < suspension)
-			{
-				this.rigidbody.AddForce(Vector3.up * cartGravity);
-			}
+		
+			this.Speedometer = rigidbody.velocity.magnitude;
 		}
-
-		if(rigidbody.velocity.x >= this.topSpeed)
-		{
-			rigidbody.velocity = new Vector3(this.topSpeed, rigidbody.velocity.y, rigidbody.velocity.z);
-		}
-	
-		this.Speedometer = rigidbody.velocity.magnitude;
 
 	}
 }
