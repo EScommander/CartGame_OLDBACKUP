@@ -31,6 +31,8 @@ public class NetworkManager : MonoBehaviour
 
 	public bool isOnline = false;
 
+	int row = 0;
+
 //	private CharacterUI charUI;
 
 
@@ -149,8 +151,9 @@ public class NetworkManager : MonoBehaviour
 		//CharacterUI.GetInstance ().EnableGUI();
 //		CharacterUI.GetInstance ().NetworkInstantiateCharacter ();
 //		GameStateManager.GetInstance ().ConnectedToNetwork ();
+		Debug.Log (Network.player);
 		GameObject myCar = (GameObject)Network.Instantiate(carPrefab, carPrefab.transform.position, carPrefab.transform.rotation, 0);
-		
+
 		Camera.main.transform.parent = myCar.transform;
 		Camera.main.transform.localPosition = new Vector3(0,1.4f,-2.15f);
 
@@ -161,8 +164,12 @@ public class NetworkManager : MonoBehaviour
 	{
 		Debug.Log ("Joined Server!");
 		JoinClientListOnServer ();
+		int playerPos = int.Parse(Network.player.ToString());
+		Debug.Log (playerPos);
+		int row = playerPos/4;
 
-		GameObject myCar = (GameObject)Network.Instantiate(carPrefab, carPrefab.transform.position, carPrefab.transform.rotation, 0);
+		GameObject myCar = (GameObject)Network.Instantiate(carPrefab, carPrefab.transform.position + new Vector3(carPrefab.transform.localScale.x, 0, 0) * 1.5f * playerPos + 
+		                                                   new Vector3(0, 0, carPrefab.transform.localScale.z) * 1.5f * row , carPrefab.transform.rotation, 0);
 
 		Camera.main.transform.parent = myCar.transform;
 		Camera.main.transform.localPosition = new Vector3(0,1.4f,-2.15f);
