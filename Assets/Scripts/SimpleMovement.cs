@@ -5,10 +5,8 @@ public class SimpleMovement : MonoBehaviour
 {
 	public float speed = 10.0f;
 
-	public Vector3 movementVector;
-	
 	private void Update () 
 	{
-		this.gameObject.transform.Translate(this.movementVector * this.speed * Time.deltaTime);
+		this.gameObject.transform.Translate(Vector3.forward * this.speed * Time.deltaTime);
 	}
 }

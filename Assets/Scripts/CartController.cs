@@ -61,14 +61,14 @@ public class CartController : MonoBehaviour
 			{
 				if(Input.GetKeyDown(KeyCode.E))
 				{
-					GameObject glaiveObj = (GameObject)Network.Instantiate(this.Glaive, transform.position + (this.transform.forward * 5.5f), Quaternion.identity, 0);
+					GameObject glaiveObj = (GameObject)Network.Instantiate(this.Glaive, transform.position + (this.transform.forward * 5.5f), this.transform.rotation, 0);
 
-					SimpleMovement moveScript = glaiveObj.GetComponent<SimpleMovement>();
+					/*SimpleMovement moveScript = glaiveObj.GetComponent<SimpleMovement>();
 
 					if(moveScript != null)
 					{
 						moveScript.movementVector = this.transform.forward;
-					}
+					}*/
 				}
 			}
 
