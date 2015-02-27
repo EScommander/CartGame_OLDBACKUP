@@ -23,6 +23,8 @@ public class CartController : MonoBehaviour
 	//Jer//
 	public GameObject[] turnableWheels;
 	private float maxTurnDeg = 75;
+	private float steeringInput = 0;
+	private float accelInput = 0;
 	//Jer//
 
 	private bool drifting = false;
@@ -37,7 +39,9 @@ public class CartController : MonoBehaviour
 			if (this.rigidbody == null)
 				return;
 
-			if (Input.GetKey(KeyCode.Space)) 
+
+
+			if (Input.GetButton("Drift") ) 
 			{
 				this.rigidbody.drag = this.traction / 1.5f;
 				this.forwardAcceleration = acceleration / 2.0f;
@@ -57,15 +61,17 @@ public class CartController : MonoBehaviour
 			if (hasTraction) 
 			{
 				//JER//
-				float steeringInput = Input.GetAxis ("JoyX0");
-				float accelInput = Input.GetAxis("R_Trigger");
+
 				steeringInput = 0;
+				steeringInput = Input.GetAxis ("JoyX0");
+				accelInput = Input.GetAxis("R_Trigger");
+
 				//JER//
 
 				if (Input.GetKey (KeyCode.W)) 
 				{
 					accelInput = 1;
-					this.rigidbody.AddForce (transform.forward * forwardAcceleration);
+					//this.rigidbody.AddForce (transform.forward * forwardAcceleration);
 				}
 				if (Input.GetKey (KeyCode.S)) 
 				{
@@ -86,7 +92,7 @@ public class CartController : MonoBehaviour
 				}
 
 				//****Jer's Code**//
-				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration * Time.deltaTime));
+				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
 				this.rigidbody.AddTorque(transform.up * steeringInput * steerHandling * Time.deltaTime);
 
 				//Potential 4-wheel handling, WIP
