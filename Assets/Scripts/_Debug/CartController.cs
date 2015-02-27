@@ -41,7 +41,19 @@ public class CartController : MonoBehaviour
 			if (this.rigidbody == null)
 				return;
 
-
+			if(Camera.main.transform.IsChildOf(transform))
+			{
+				if(Input.GetKey (KeyCode.LeftShift))
+				{
+					Camera.main.transform.localPosition = new Vector3(0,1.4f,2.15f);
+					Camera.main.transform.localRotation = Quaternion.Euler(24.0f,180.0f,0.0f);
+				}
+				else
+				{
+					Camera.main.transform.localPosition = new Vector3(0,1.4f,-2.15f);
+					Camera.main.transform.localRotation = Quaternion.Euler(24.0f,0.0f,0.0f);
+				}
+			}
 
 			if (Input.GetButton("Drift") ) 
 			{
