@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CartController : MonoBehaviour 
 {
-	public static float cartGravity = 10.0f;
+	public static float cartGravity = 100.0f;
 
 	public float handling = 10.0f;
 	public float acceleration = 30.0f;
@@ -18,11 +18,14 @@ public class CartController : MonoBehaviour
 
 	private bool hasTraction = true;
 	private float forwardAcceleration = 30.0f;
+	private float steerHandling = 10.0f;
 
 	//Jer//
 	public GameObject[] turnableWheels;
 	private float maxTurnDeg = 75;
 	//Jer//
+
+	private bool drifting = false;
 
 	// Update is called once per frame
 	void Update () 
@@ -36,13 +39,17 @@ public class CartController : MonoBehaviour
 
 			if (Input.GetKey(KeyCode.Space)) 
 			{
-				this.rigidbody.drag = this.traction / 2.0f;
+				this.rigidbody.drag = this.traction / 1.5f;
 				this.forwardAcceleration = acceleration / 2.0f;
+				this.steerHandling = this.handling * 2.0f;
+				drifting = true;
 			}
 			else
 			{
 				this.rigidbody.drag = this.traction;
 				this.forwardAcceleration = acceleration;
+				this.steerHandling = this.handling;
+				drifting = false;
 			}
 
 			this.rigidbody.angularDrag = this.rotationalTraction;
@@ -79,8 +86,14 @@ public class CartController : MonoBehaviour
 
 				//****Jer's Code**//
 				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
-				this.rigidbody.AddTorque(transform.up * steeringInput * handling);
+				this.rigidbody.AddTorque(transform.up * steeringInput * steerHandling);
 
+				//Potential 4-wheel handling, WIP
+				if(!drifting)
+				{
+					this.rigidbody.velocity = Vector3.RotateTowards(this.rigidbody.velocity, transform.forward, this.traction * 0.1f, 0.0f);
+				}
+ 	
 				if(turnableWheels.Length > 0)
 				{
 					for(int i = 0; i < turnableWheels.Length; i++)
@@ -102,6 +115,11 @@ public class CartController : MonoBehaviour
 				else if(hit.distance < suspension)
 				{
 					this.rigidbody.AddForce(Vector3.up * cartGravity);
+				}
+
+				if(hit.distance <= suspension * 1.1f)
+				{
+					rigidbody.velocity = new Vector3(rigidbody.velocity.x, 0.0f, rigidbody.velocity.z);
 				}
 			}
 
