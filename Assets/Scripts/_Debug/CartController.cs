@@ -59,6 +59,7 @@ public class CartController : MonoBehaviour
 				//JER//
 				float steeringInput = Input.GetAxis ("JoyX0");
 				float accelInput = Input.GetAxis("R_Trigger");
+				steeringInput = 0;
 				//JER//
 
 				if (Input.GetKey (KeyCode.W)) 
@@ -85,20 +86,20 @@ public class CartController : MonoBehaviour
 				}
 
 				//****Jer's Code**//
-				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration));
-				this.rigidbody.AddTorque(transform.up * steeringInput * steerHandling);
+				this.rigidbody.AddForce((transform.forward * accelInput * forwardAcceleration * Time.deltaTime));
+				this.rigidbody.AddTorque(transform.up * steeringInput * steerHandling * Time.deltaTime);
 
 				//Potential 4-wheel handling, WIP
 				if(!drifting)
 				{
-					this.rigidbody.velocity = Vector3.RotateTowards(this.rigidbody.velocity, transform.forward, this.traction * 0.1f, 0.0f);
+					this.rigidbody.velocity = Vector3.RotateTowards(this.rigidbody.velocity, transform.forward, this.traction * 0.3f * Time.deltaTime, 0.0f);
 				}
  	
 				if(turnableWheels.Length > 0)
 				{
 					for(int i = 0; i < turnableWheels.Length; i++)
 					{
-						turnableWheels[i].transform.eulerAngles = new Vector3(0, steeringInput * maxTurnDeg, 0);
+						turnableWheels[i].transform.localEulerAngles = new Vector3(0, steeringInput * maxTurnDeg, 0);
 					}
 				}
 				//****Jer's Code END**//
