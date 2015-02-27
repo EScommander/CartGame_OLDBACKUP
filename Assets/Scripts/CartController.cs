@@ -18,6 +18,8 @@ public class CartController : MonoBehaviour
 
 	public ParticleSystem driftFX;
 
+	public GameObject Glaive;
+
 	private bool hasTraction = true;
 	private float forwardAcceleration = 30.0f;
 	private float steerHandling = 10.0f;
@@ -52,6 +54,21 @@ public class CartController : MonoBehaviour
 				{
 					Camera.main.transform.localPosition = new Vector3(0,1.4f,-2.15f);
 					Camera.main.transform.localRotation = Quaternion.Euler(24.0f,0.0f,0.0f);
+				}
+			}
+
+			if(this.Glaive != null)
+			{
+				if(Input.GetKeyDown(KeyCode.E))
+				{
+					GameObject glaiveObj = (GameObject)Network.Instantiate(this.Glaive, transform.position + (this.transform.forward * 5.5f), Quaternion.identity, 0);
+
+					SimpleMovement moveScript = glaiveObj.GetComponent<SimpleMovement>();
+
+					if(moveScript != null)
+					{
+						moveScript.movementVector = this.transform.forward;
+					}
 				}
 			}
 
