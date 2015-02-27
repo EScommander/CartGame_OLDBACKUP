@@ -115,7 +115,7 @@ public class NetworkManager : MonoBehaviour
 	private void StartServer()
 	{
 							  //(int connections, int listenPort, bool useNat) -- 20 used in FTP, 80 used for Internet traffic
-		Network.InitializeServer (4, 25000, !Network.HavePublicAddress ());
+		Network.InitializeServer (32, 25000, !Network.HavePublicAddress ());
 		MasterServer.RegisterHost (typeName, gameName);
 	}
 
