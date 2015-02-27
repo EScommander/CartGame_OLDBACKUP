@@ -16,6 +16,8 @@ public class CartController : MonoBehaviour
 
 	public float Speedometer = 0.0f;
 
+	public ParticleSystem driftFX;
+
 	private bool hasTraction = true;
 	private float forwardAcceleration = 30.0f;
 	private float steerHandling = 10.0f;
@@ -47,6 +49,11 @@ public class CartController : MonoBehaviour
 				this.forwardAcceleration = acceleration / 2.0f;
 				this.steerHandling = this.handling * 2.0f;
 				drifting = true;
+
+				if(this.driftFX != null)
+				{
+					this.driftFX.enableEmission = true;
+				}
 			}
 			else
 			{
@@ -54,6 +61,11 @@ public class CartController : MonoBehaviour
 				this.forwardAcceleration = acceleration;
 				this.steerHandling = this.handling;
 				drifting = false;
+
+				if(this.driftFX != null)
+				{
+					this.driftFX.enableEmission = false;
+				}
 			}
 
 			this.rigidbody.angularDrag = this.rotationalTraction;
