@@ -31,7 +31,17 @@ public class NetworkManager : MonoBehaviour
 
 	public bool isOnline = false;
 
+	public bool countDownStarted = false;
+	public static bool gameStarted = false;
+
+	public int minPlayers = 2;
+
 	int row = 0;
+
+	double raceStart = -1;
+
+	public GUIStyle countDownStyle;
+
 
 //	private CharacterUI charUI;
 
@@ -39,6 +49,8 @@ public class NetworkManager : MonoBehaviour
 	// Use this for initialization
 	void Start () 
 	{
+
+
 		conversation.Add ("Connected.");
 		instance_ = this;
 
@@ -56,8 +68,15 @@ public class NetworkManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-	
-
+		if(!countDownStarted && Network.isServer)
+		{
+			if(clients.Count + 1 >= minPlayers)
+			{
+				SendRaceStartTime();
+				Debug.Log ("START!");
+				countDownStarted = true;
+			}
+		}
 	}
 
 	public static NetworkManager GetInstance()
@@ -107,9 +126,25 @@ public class NetworkManager : MonoBehaviour
 				}
 				//CLIENT END
 			}
-			if(Network.isClient)
+//			if(Network.isClient)
+//			{
+//
+//			}
+
+
+			if(!gameStarted && raceStart > Network.time)
+			{
+				int countDown = (int)(raceStart - Network.time) + 1;
+				GUI.Label (new Rect(Screen.width/2-100, 0, 200, 200),  ""+countDown, countDownStyle);
+			}
+			else if(!gameStarted && raceStart != -1)
+			{
+				gameStarted = true;
+			}
+			else if(raceStart + 1 > Network.time)
 			{
 
+				GUI.Label (new Rect(Screen.width/2-100, 0, 200, 200),  "GO!", countDownStyle);
 			}
 		}
 	}
@@ -177,7 +212,7 @@ public class NetworkManager : MonoBehaviour
 		//GameStateManager.GetInstance ().ConnectedToNetwork ();
 		//SpawnPlayer();
 	}
-	
+
 	void RefreshHostList()
 	{
 		MasterServer.RequestHostList (typeName);
@@ -201,6 +236,19 @@ public class NetworkManager : MonoBehaviour
 		clients.Add (player);
 	}
 
+
+	[RPC] void SendRaceStartTime()
+	{
+		float delay = 10.0f;
+		raceStart = Network.time + delay;
+		networkView.RPC ("ReceiveRaceStartTime", RPCMode.Others, delay);
+
+	}
+
+	[RPC] void ReceiveRaceStartTime(float delay)
+	{
+		raceStart = Network.time + delay;
+	}
 	
 
 //	// [RPC] = Remote Procedure Call needed for sending across network

@@ -31,12 +31,30 @@ public class CartController : MonoBehaviour
 	private float accelInput = 0;
 	//Jer//
 
-	private bool drifting = false;
+	public bool drifting = false;
+	float prevShot = 0.0f;
+	float shotCoolDown = 0.2f;
 
 	// Update is called once per frame
 	void Update () 
 	{
-		if(networkView.isMine || NetworkManager.GetInstance().isOnline == false)
+		if(drifting)
+		{
+			if(this.driftFX != null)
+			{
+				this.driftFX.enableEmission = true;
+			}
+		}
+		else
+		{
+			if(this.driftFX != null)
+			{
+				this.driftFX.enableEmission = false;
+			}
+		}
+
+
+		if((networkView.isMine && NetworkManager.gameStarted) || NetworkManager.GetInstance().isOnline == false)
 		{
 			Debug.DrawRay (transform.position, transform.forward * 10.0f);
 
@@ -57,11 +75,15 @@ public class CartController : MonoBehaviour
 				}
 			}
 
+
 			if(this.Glaive != null)
 			{
-				if(Input.GetKeyDown(KeyCode.E))
+				prevShot += Time.deltaTime;
+				if(prevShot > shotCoolDown && Input.GetKey(KeyCode.LeftShift))
 				{
 					GameObject glaiveObj = (GameObject)Network.Instantiate(this.Glaive, transform.position + (this.transform.forward * 5.5f), this.transform.rotation, 0);
+
+					prevShot = 0.0f;
 
 					/*SimpleMovement moveScript = glaiveObj.GetComponent<SimpleMovement>();
 
@@ -79,10 +101,7 @@ public class CartController : MonoBehaviour
 				this.steerHandling = this.handling * 2.0f;
 				drifting = true;
 
-				if(this.driftFX != null)
-				{
-					this.driftFX.enableEmission = true;
-				}
+
 			}
 			else
 			{
@@ -91,10 +110,7 @@ public class CartController : MonoBehaviour
 				this.steerHandling = this.handling;
 				drifting = false;
 
-				if(this.driftFX != null)
-				{
-					this.driftFX.enableEmission = false;
-				}
+
 			}
 
 			this.rigidbody.angularDrag = this.rotationalTraction;

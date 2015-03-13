@@ -7,6 +7,7 @@ public class SimpleRotation : MonoBehaviour
 
 	private void Update () 
 	{
-		this.gameObject.transform.Rotate (Vector3.up, this.speed * Time.deltaTime);
+		if(transform.parent.networkView.isMine)
+			transform.Rotate (Vector3.up, speed * Time.deltaTime);
 	}
 }
